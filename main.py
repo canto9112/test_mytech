@@ -13,10 +13,11 @@ exel_types = ['.xlsx', '.xlsm', '.xltx', 'xltm', '.xlsb', '.xlam']
 
 @app.post('/')
 async def save_file(file: UploadFile = File(...)):
-    with open(f'{file.filename}', 'wb') as buffer:
-        file_type = path.splitext(file.filename)[1]
-        if file_type in word_types or exel_types:
-            return {'error! word and excel files are not supported': BAD_REQUEST}
-        else:
+    file_type = path.splitext(file.filename)[1]
+
+    if file_type in word_types and exel_types:
+        return {'error! word and excel files are not supported': BAD_REQUEST}
+    else:
+        with open(f'{file.filename}', 'wb') as buffer:
             shutil.copyfileobj(file.file, buffer)
         return {f'file - {file.filename} save': SUCCESSFULLY_REQUEST}
